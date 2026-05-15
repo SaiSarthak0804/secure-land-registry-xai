@@ -1,0 +1,164 @@
+from database.db_connect import connection
+
+from blockchain.blockchain import Blockchain
+from blockchain.block import Block
+
+from ai_model.fraud_checker import check_fraud
+
+from ai_model.shap_explainer import generate_xai
+
+
+# Create blockchain
+land_chain = Blockchain()
+
+# Database cursor
+cursor = connection.cursor()
+
+
+print("\n========== LAND REGISTRATION ==========\n")
+
+# User input
+owner_name = input("Enter Owner Name: ")
+
+land_id = input("Enter Land ID: ")
+
+location = input("Enter Location: ")
+
+area = float(input("Enter Land Area: "))
+
+transaction_count = int(
+    input("Enter Transaction Count: ")
+)
+
+market_value = int(
+    input("Enter Market Value: ")
+)
+
+owner_history = int(
+    input("Enter Owner History Count: ")
+)
+
+
+# Check duplicate land ID
+check_query = """
+SELECT * FROM land_records
+WHERE land_id = %s
+"""
+
+cursor.execute(check_query, (land_id,))
+
+existing_land = cursor.fetchone()
+
+# Duplicate detected
+if existing_land:
+
+    print("\nDuplicate Land ID Detected!")
+    print("Land Registration Failed.")
+
+    cursor.close()
+    connection.close()
+
+    exit()
+
+
+# Store in PostgreSQL
+insert_query = """
+INSERT INTO land_records
+(owner_name, land_id, location, area)
+VALUES (%s, %s, %s, %s)
+"""
+
+cursor.execute(
+    insert_query,
+    (
+        owner_name,
+        land_id,
+        location,
+        area
+    )
+)
+
+connection.commit()
+
+print("\nLand Registered Successfully!")
+
+
+# Blockchain block
+block_data = (
+    f"{land_id} | "
+    f"{owner_name} | "
+    f"{location} | "
+    f"{area}"
+)
+
+new_block = Block(
+
+    len(land_chain.chain),
+
+    block_data,
+
+    land_chain.get_latest_block().hash
+)
+
+land_chain.add_block(new_block)
+
+print("\nBlockchain Record Added!")
+
+# Validate blockchain
+if land_chain.validate_chain():
+
+    print("Blockchain VALID")
+
+else:
+
+    print("Blockchain INVALID")
+
+
+# AI Fraud Detection
+is_fraud, reason = check_fraud(
+
+    area,
+    transaction_count,
+    market_value,
+    owner_history
+)
+
+print("\n========== AI FRAUD ANALYSIS ==========\n")
+
+print(reason)
+
+
+# Fraud detected
+if is_fraud:
+
+    fraud_query = """
+    INSERT INTO fraud_logs
+    (land_id, owner_name, fraud_reason)
+    VALUES (%s, %s, %s)
+    """
+
+    cursor.execute(
+
+        fraud_query,
+
+        (
+            land_id,
+            owner_name,
+            reason
+        )
+    )
+
+    connection.commit()
+
+    print("\nFraud Log Stored Successfully!")
+
+    # Generate XAI graph
+    generate_xai(
+        area,
+        transaction_count
+    )
+
+
+# Close database
+cursor.close()
+connection.close()
