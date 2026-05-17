@@ -1,8 +1,25 @@
+import hashlib
+
+
+# Admin username
 ADMIN_USERNAME = "admin"
 
-ADMIN_PASSWORD = "admin123"
+
+# Hash password
+def hash_password(password):
+
+    return hashlib.sha256(
+        password.encode()
+    ).hexdigest()
 
 
+# Stored hashed password
+ADMIN_PASSWORD_HASH = hash_password(
+    "admin123"
+)
+
+
+# Login function
 def login():
 
     print("\n========== LOGIN ==========\n")
@@ -11,21 +28,27 @@ def login():
 
     password = input("Enter Password: ")
 
-    # Correct credentials
+    # Hash entered password
+    entered_password_hash = hash_password(
+        password
+    )
+
+    # Verify credentials
     if (
 
         username == ADMIN_USERNAME
 
         and
 
-        password == ADMIN_PASSWORD
+        entered_password_hash
+        ==
+        ADMIN_PASSWORD_HASH
     ):
 
         print("\nLogin Successful!")
 
         return True
 
-    # Wrong credentials
     else:
 
         print("\nInvalid Username or Password!")

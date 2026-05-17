@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>
+        Dashboard
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="container-fluid">
+
+        <a class="navbar-brand">
+
+            Secure Land Registry System
+
+        </a>
+
+        <div class="d-flex">
+
+            <a
+                href="/logout"
+                class="btn btn-danger"
+            >
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- HERO SECTION -->
+<div class="container mt-5">
+
+    <div class="hero-section text-center p-5">
+
+        <h1 class="display-5">
+
+            Agricultural Industry 5.0
+
+        </h1>
+
+        <p class="lead mt-3">
+
+            Blockchain + AI + Explainable AI
+            based Secure Land Registration
+
+        </p>
+
+    </div>
+
+</div>
+
+<!-- ANALYTICS SECTION -->
+<div class="container mt-5">
+
+    <div class="row">
+
+        <!-- Total Records -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card analytics-card bg-primary text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ total_records }}
+
+                    </h2>
+
+                    <p>
+
+                        Total Lands Registered
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Fraud Cases -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card analytics-card bg-danger text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ fraud_count }}
+
+                    </h2>
+
+                    <p>
+
+                        Fraud Cases Detected
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Blockchain -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card analytics-card bg-success text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ blockchain_status }}
+
+                    </h2>
+
+                    <p>
+
+                        Blockchain Status
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AI Status -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card analytics-card bg-dark text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ ai_status }}
+
+                    </h2>
+
+                    <p>
+
+                        AI Fraud Detection
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- DASHBOARD CARDS -->
+<div class="container mt-5">
+
+    <div class="row">
+
+        <!-- Register -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow">
+
+                <div class="card-body text-center">
+
+                    <h3>
+
+                        Register Land
+
+                    </h3>
+
+                    <p>
+
+                        Secure blockchain-based
+                        land registration.
+
+                    </p>
+
+                    <a
+                        href="/register"
+                        class="btn btn-primary"
+                    >
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Search -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow">
+
+                <div class="card-body text-center">
+
+                    <h3>
+
+                        Search Land
+
+                    </h3>
+
+                    <p>
+
+                        Verify ownership and
+                        land details instantly.
+
+                    </p>
+
+                    <a
+                        href="/search"
+                        class="btn btn-success"
+                    >
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Blockchain -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow">
+
+                <div class="card-body text-center">
+
+                    <h3>
+
+                        Blockchain Verification
+
+                    </h3>
+
+                    <p>
+
+                        Validate blockchain integrity
+                        and tamper protection.
+
+                    </p>
+
+                    <a
+                        href="/verify"
+                        class="btn btn-warning"
+                    >
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- History -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow">
+
+                <div class="card-body text-center">
+
+                    <h3>
+
+                        Transaction History
+
+                    </h3>
+
+                    <p>
+
+                        View all registered land
+                        transactions.
+
+                    </p>
+
+                    <a
+                        href="/history"
+                        class="btn btn-info"
+                    >
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AI Comparison -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow">
+
+                <div class="card-body text-center">
+
+                    <h3>
+
+                        AI Model Comparison
+
+                    </h3>
+
+                    <p>
+
+                        Compare ML model performance
+                        and accuracy.
+
+                    </p>
+
+                    <a
+                        href="/models"
+                        class="btn btn-dark"
+                    >
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FOOTER -->
+<footer class="footer mt-5 p-4 text-center">
+
+    <p>
+
+        Secure Land Registry System © 2026
+
+    </p>
+
+</footer>
+
+</body>
+
+</html>

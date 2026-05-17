@@ -9,12 +9,14 @@ data = pd.read_csv(
 )
 
 # Features
-X = data[[
-    "area",
-    "transaction_count",
-    "market_value",
-    "owner_history"
-]]
+X = data[
+    [
+        "area",
+        "transaction_count",
+        "market_value",
+        "owner_history"
+    ]
+]
 
 # Target
 y = data["fraud"]
@@ -34,12 +36,25 @@ def check_fraud(
     owner_history
 ):
 
-    prediction = model.predict([[
+    # Input sample
+    sample = [[
         area,
         transaction_count,
         market_value,
         owner_history
-    ]])
+    ]]
+
+    # Prediction
+    prediction = model.predict(sample)
+
+    # Probability
+    probability = model.predict_proba(sample)
+
+    # Fraud confidence %
+    confidence = round(
+        probability[0][1] * 100,
+        2
+    )
 
     # Fraud detected
     if prediction[0] == 1:
@@ -50,7 +65,7 @@ def check_fraud(
             "abnormal land value detected."
         )
 
-        return True, reason
+        return True, reason, confidence
 
     # Safe transaction
     else:
@@ -59,4 +74,4 @@ def check_fraud(
             "Transaction pattern appears normal."
         )
 
-        return False, reason
+        return False, reason, confidence

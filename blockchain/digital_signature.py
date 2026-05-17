@@ -5,7 +5,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
 
-# Generate public/private keys
+# Generate keys
 private_key = rsa.generate_private_key(
 
     public_exponent=65537,
@@ -15,47 +15,49 @@ private_key = rsa.generate_private_key(
 public_key = private_key.public_key()
 
 
-# Sample land data
-message = b"LAND101 | Sai | Odisha | Area: 12"
+# Generate signature
+def generate_signature(message):
 
+    signature = private_key.sign(
 
-# Generate digital signature
-signature = private_key.sign(
-
-    message,
-
-    padding.PSS(
-
-        mgf=padding.MGF1(hashes.SHA256()),
-        salt_length=padding.PSS.MAX_LENGTH
-    ),
-
-    hashes.SHA256()
-)
-
-print("\nDigital Signature Generated Successfully!")
-
-
-# Verify signature
-try:
-
-    public_key.verify(
-
-        signature,
-        message,
+        message.encode(),
 
         padding.PSS(
 
             mgf=padding.MGF1(hashes.SHA256()),
+
             salt_length=padding.PSS.MAX_LENGTH
         ),
 
         hashes.SHA256()
     )
 
-    print("Signature VERIFIED")
-    print("Data Integrity Maintained")
+    return signature
 
-except:
 
-    print("Signature Verification FAILED")
+# Verify signature
+def verify_signature(message, signature):
+
+    try:
+
+        public_key.verify(
+
+            signature,
+
+            message.encode(),
+
+            padding.PSS(
+
+                mgf=padding.MGF1(hashes.SHA256()),
+
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+
+            hashes.SHA256()
+        )
+
+        return True
+
+    except:
+
+        return False

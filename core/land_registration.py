@@ -7,6 +7,11 @@ from ai_model.fraud_checker import check_fraud
 
 from ai_model.shap_explainer import generate_xai
 
+from blockchain.digital_signature import (
+    generate_signature,
+    verify_signature
+)
+
 
 # Create blockchain
 land_chain = Blockchain()
@@ -103,6 +108,25 @@ new_block = Block(
 land_chain.add_block(new_block)
 
 print("\nBlockchain Record Added!")
+# Generate digital signature
+signature = generate_signature(
+    block_data
+)
+
+# Verify signature
+is_verified = verify_signature(
+    block_data,
+    signature
+)
+
+# Signature result
+if is_verified:
+
+    print("Digital Signature VERIFIED")
+
+else:
+
+    print("Digital Signature FAILED")
 
 # Validate blockchain
 if land_chain.validate_chain():
@@ -115,7 +139,7 @@ else:
 
 
 # AI Fraud Detection
-is_fraud, reason = check_fraud(
+is_fraud, reason, confidence = check_fraud(
 
     area,
     transaction_count,
@@ -126,6 +150,7 @@ is_fraud, reason = check_fraud(
 print("\n========== AI FRAUD ANALYSIS ==========\n")
 
 print(reason)
+print(f"Fraud Confidence: {confidence}%")
 
 
 # Fraud detected
@@ -154,11 +179,13 @@ if is_fraud:
 
     # Generate XAI graph
     generate_xai(
-        area,
-        transaction_count
-    )
+
+    area,
+    transaction_count,
+    market_value,
+    owner_history
+)
 
 
 # Close database
 cursor.close()
-connection.close()

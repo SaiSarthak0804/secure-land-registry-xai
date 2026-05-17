@@ -1,0 +1,89 @@
+body {
+
+    background-color: #f4f7f9;
+
+    font-family: Arial, sans-serif;
+}
+
+
+/* LOGIN */
+.login-box {
+
+    width: 400px;
+
+    margin: 100px auto;
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 15px;
+
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.1);
+}
+
+
+/* HERO SECTION */
+.hero-section {
+
+    background: linear-gradient(
+
+        to right,
+
+        #1e3c72,
+
+        #2a5298
+    );
+
+    color: white;
+
+    border-radius: 20px;
+}
+
+
+/* DASHBOARD CARDS */
+.dashboard-card {
+
+    border: none;
+
+    border-radius: 20px;
+
+    transition: 0.3s;
+}
+
+
+.dashboard-card:hover {
+
+    transform: scale(1.03);
+}
+
+
+/* FOOTER */
+.footer {
+
+    background: #1e3c72;
+
+    color: white;
+}
+
+
+h1, h2, h3 {
+
+    color: #1e3d59;
+}
+
+/* ANALYTICS CARDS */
+.analytics-card {
+
+    border: none;
+
+    border-radius: 20px;
+
+    transition: 0.3s;
+}
+
+
+.analytics-card:hover {
+
+    transform: scale(1.03);
+}

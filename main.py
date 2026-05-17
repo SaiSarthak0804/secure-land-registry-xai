@@ -9,6 +9,7 @@ if not login():
     exit()
 
 
+# Menu display
 def show_menu():
 
     print("\n========================================")
@@ -19,16 +20,18 @@ def show_menu():
     print("2. Verify Blockchain")
     print("3. View Transaction History")
     print("4. Search Land Record")
-    print("5. Exit")
+    print("5. Compare AI Models")
+    print("6. Exit")
 
 
+# Main loop
 while True:
 
     show_menu()
 
     choice = input("\nEnter Your Choice: ")
 
-    # Register land
+    # Register Land
     if choice == "1":
 
         import core.land_registration
@@ -37,7 +40,7 @@ while True:
             core.land_registration
         )
 
-    # Verify blockchain
+    # Verify Blockchain
     elif choice == "2":
 
         import core.land_verification
@@ -46,7 +49,7 @@ while True:
             core.land_verification
         )
 
-    # Transaction history
+    # View Transaction History
     elif choice == "3":
 
         import core.transaction_history
@@ -55,7 +58,7 @@ while True:
             core.transaction_history
         )
 
-    # Search land
+    # Search Land Record
     elif choice == "4":
 
         import core.search_land
@@ -64,14 +67,23 @@ while True:
             core.search_land
         )
 
-    # Exit
+    # Compare AI Models
     elif choice == "5":
+
+        import ai_model.model_comparison
+
+        importlib.reload(
+            ai_model.model_comparison
+        )
+
+    # Exit
+    elif choice == "6":
 
         print("\nSystem Closed Successfully")
 
         break
 
-    # Invalid choice
+    # Invalid Choice
     else:
 
         print("\nInvalid Choice. Try Again.")
