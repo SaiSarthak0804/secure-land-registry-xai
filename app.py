@@ -1,7 +1,6 @@
 import pandas as pd
 
 from flask import (
-
     Flask,
     render_template,
     request,
@@ -33,11 +32,9 @@ from ai_model.fraud_checker import check_fraud
 from ai_model.shap_explainer import generate_xai
 
 from blockchain.digital_signature import (
-
     generate_signature,
     verify_signature
 )
-
 
 app = Flask(__name__)
 
@@ -45,16 +42,20 @@ app.secret_key = "secure_land_registry"
 
 land_chain = Blockchain()
 
+# =========================
+# ADMIN LOGIN
+# =========================
 
-# Admin credentials
 ADMIN_USERNAME = "admin"
 
 ADMIN_PASSWORD_HASH = hash_password(
     "admin123"
 )
 
-
+# =========================
 # LOGIN PAGE
+# =========================
+
 @app.route("/", methods=["GET", "POST"])
 
 def login():
@@ -72,14 +73,9 @@ def login():
         )
 
         if (
-
             username == ADMIN_USERNAME
-
             and
-
-            entered_password_hash
-            ==
-            ADMIN_PASSWORD_HASH
+            entered_password_hash == ADMIN_PASSWORD_HASH
         ):
 
             session["user"] = username
@@ -93,14 +89,14 @@ def login():
             error = "Invalid Username or Password"
 
     return render_template(
-
         "login.html",
-
         error=error
     )
 
-
+# =========================
 # DASHBOARD
+# =========================
+
 @app.route("/dashboard")
 
 def dashboard():
@@ -113,14 +109,14 @@ def dashboard():
 
     cursor = connection.cursor()
 
-    # Total land records
+    # Total Records
     cursor.execute(
         "SELECT COUNT(*) FROM land_records"
     )
 
     total_records = cursor.fetchone()[0]
 
-    # Fraud count
+    # Fraud Count
     cursor.execute(
         "SELECT COUNT(*) FROM fraud_logs"
     )
@@ -146,8 +142,10 @@ def dashboard():
         ai_status=ai_status
     )
 
-
+# =========================
 # REGISTER LAND
+# =========================
+
 @app.route("/register", methods=["GET", "POST"])
 
 def register_land():
@@ -182,16 +180,14 @@ def register_land():
 
         cursor = connection.cursor()
 
-        # Duplicate land check
+        # Duplicate check
         check_query = """
         SELECT * FROM land_records
         WHERE land_id = %s
         """
 
         cursor.execute(
-
             check_query,
-
             (land_id,)
         )
 
@@ -205,59 +201,10 @@ def register_land():
 
         else:
 
-            # Insert record
-            insert_query = """
-            INSERT INTO land_records
-            (
-                owner_name,
-                land_id,
-                location,
-                area
-            )
-            VALUES (%s, %s, %s, %s)
-            """
+            # =========================
+            # AI FRAUD DETECTION FIRST
+            # =========================
 
-            cursor.execute(
-
-                insert_query,
-
-                (
-                    owner_name,
-                    land_id,
-                    location,
-                    area
-                )
-            )
-
-            connection.commit()
-
-            # Blockchain block data
-            block_data = (
-
-                f"{land_id} | "
-
-                f"{owner_name} | "
-
-                f"{location} | "
-
-                f"{area}"
-            )
-
-            # Create blockchain block
-            new_block = Block(
-
-                len(land_chain.chain),
-
-                block_data,
-
-                land_chain.get_latest_block().hash
-            )
-
-            land_chain.add_block(
-                new_block
-            )
-
-            # Fraud detection
             is_fraud, reason, confidence = check_fraud(
 
                 area,
@@ -269,48 +216,136 @@ def register_land():
                 owner_history
             )
 
-            # Digital signature
-            signature = generate_signature(
-                block_data
-            )
+            # =========================
+            # BLOCK FRAUD USERS
+            # =========================
 
-            # Signature verification
-            verified = verify_signature(
+            if confidence >= 70:
 
-                block_data,
+                result = (
 
-                signature
-            )
+                    f"Registration BLOCKED | "
 
-            # Generate SHAP XAI
-            generate_xai(
+                    f"{reason} | "
 
-                area,
+                    f"Fraud Confidence: "
 
-                transaction_count,
+                    f"{confidence}%"
+                )
 
-                market_value,
+            else:
 
-                owner_history
-            )
+                # =========================
+                # INSERT RECORD
+                # =========================
 
-            shap_image = True
+                insert_query = """
+                INSERT INTO land_records
+                (
+                    owner_name,
+                    land_id,
+                    location,
+                    area
+                )
+                VALUES (%s, %s, %s, %s)
+                """
 
-            # Final output
-            result = (
+                cursor.execute(
 
-                f"Land Registered Successfully | "
+                    insert_query,
 
-                f"{reason} | "
+                    (
+                        owner_name,
+                        land_id,
+                        location,
+                        area
+                    )
+                )
 
-                f"Fraud Confidence: "
+                connection.commit()
 
-                f"{confidence}% | "
+                # =========================
+                # BLOCKCHAIN DATA
+                # =========================
 
-                f"Digital Signature Verified: "
+                block_data = (
 
-                f"{verified}"
-            )
+                    f"{land_id} | "
+
+                    f"{owner_name} | "
+
+                    f"{location} | "
+
+                    f"{area}"
+                )
+
+                # =========================
+                # CREATE BLOCKCHAIN BLOCK
+                # =========================
+
+                new_block = Block(
+
+                    len(land_chain.chain),
+
+                    block_data,
+
+                    land_chain.get_latest_block().hash
+                )
+
+                land_chain.add_block(
+                    new_block
+                )
+
+                # =========================
+                # DIGITAL SIGNATURE
+                # =========================
+
+                signature = generate_signature(
+                    block_data
+                )
+
+                verified = verify_signature(
+
+                    block_data,
+
+                    signature
+                )
+
+                # =========================
+                # SHAP XAI
+                # =========================
+
+                generate_xai(
+
+                    area,
+
+                    transaction_count,
+
+                    market_value,
+
+                    owner_history
+                )
+
+                shap_image = True
+
+                # =========================
+                # FINAL RESULT
+                # =========================
+
+                result = (
+
+                    f"Land Registered Successfully | "
+
+                    f"{reason} | "
+
+                    f"Fraud Confidence: "
+
+                    f"{confidence}% | "
+
+                    f"Digital Signature Verified: "
+
+                    f"{verified}"
+                )
 
         cursor.close()
 
@@ -323,8 +358,10 @@ def register_land():
         shap_image=shap_image
     )
 
-
+# =========================
 # SEARCH LAND
+# =========================
+
 @app.route("/search", methods=["GET", "POST"])
 
 def search_land():
@@ -345,9 +382,7 @@ def search_land():
         """
 
         cursor.execute(
-
             query,
-
             (land_id,)
         )
 
@@ -368,8 +403,10 @@ def search_land():
         error=error
     )
 
-
+# =========================
 # TRANSACTION HISTORY
+# =========================
+
 @app.route("/history")
 
 def history():
@@ -410,8 +447,10 @@ def history():
         fraud_count=fraud_count
     )
 
-
+# =========================
 # BLOCKCHAIN VERIFICATION
+# =========================
+
 @app.route("/verify")
 
 def verify_blockchain():
@@ -475,8 +514,10 @@ def verify_blockchain():
         valid=valid
     )
 
-
+# =========================
 # AI MODEL COMPARISON
+# =========================
+
 @app.route("/models")
 
 def compare_models():
@@ -530,9 +571,7 @@ def compare_models():
         )
 
         accuracy = accuracy_score(
-
             y_test,
-
             predictions
         )
 
@@ -552,8 +591,10 @@ def compare_models():
         results=results
     )
 
-
+# =========================
 # LOGOUT
+# =========================
+
 @app.route("/logout")
 
 def logout():
@@ -564,8 +605,10 @@ def logout():
         url_for("login")
     )
 
-
+# =========================
 # RUN APPLICATION
+# =========================
+
 if __name__ == "__main__":
 
     app.run(debug=True)
