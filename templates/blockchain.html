@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>
         Blockchain Verification
@@ -22,52 +27,261 @@
 
 <body>
 
-<div class="container mt-5">
+{% include 'navbar.html' %}
 
-    <div class="card p-5 shadow">
+<div class="container mt-5 mb-5">
 
-        <h2 class="text-center mb-4">
+    <!-- HERO SECTION -->
 
-            Blockchain Verification
+    <div class="hero-section text-center p-5 mb-5">
+
+        <h1>
+
+            Blockchain Verification Portal
+
+        </h1>
+
+        <p class="lead mt-3">
+
+            Secure Tamper-Proof Verification
+            of Land Ownership Records
+
+        </p>
+
+    </div>
+
+    <!-- BLOCKCHAIN STATUS -->
+
+    <div class="row mb-5">
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card analytics-card bg-success text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        ACTIVE
+
+                    </h2>
+
+                    <p>
+
+                        Blockchain Network Status
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card analytics-card bg-primary text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        SHA-256
+
+                    </h2>
+
+                    <p>
+
+                        Secure Hash Encryption
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card analytics-card bg-dark text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        ENABLED
+
+                    </h2>
+
+                    <p>
+
+                        Digital Signature Validation
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- VALIDATION RESULT -->
+
+    <div class="card shadow-lg p-5"
+         style="border-radius:25px;">
+
+        <h2 class="text-center mb-5"
+            style="color:#1e3a8a;">
+
+            Blockchain Integrity Status
 
         </h2>
 
         {% if valid %}
 
-        <div class="alert alert-success">
+        <div class="alert alert-success text-center p-4">
 
-            <h4>
+            <h3>
+
                 Blockchain VALID
-            </h4>
 
-            <p>
-                All land records are secure and untampered.
+            </h3>
+
+            <p class="mt-3">
+
+                All land records are securely stored
+                and no tampering has been detected
+                within the blockchain network.
+
             </p>
+
+            <span class="badge bg-success p-3 mt-3">
+
+                Tamper-Proof Verification Successful
+
+            </span>
 
         </div>
 
         {% else %}
 
-        <div class="alert alert-danger">
+        <div class="alert alert-danger text-center p-4">
 
-            <h4>
+            <h3>
+
                 Blockchain INVALID
-            </h4>
 
-            <p>
-                Tampering Detected!
+            </h3>
+
+            <p class="mt-3">
+
+                Possible tampering or unauthorized
+                modification detected inside
+                blockchain records.
+
             </p>
+
+            <span class="badge bg-danger p-3 mt-3">
+
+                Integrity Compromised
+
+            </span>
 
         </div>
 
         {% endif %}
 
+        <!-- SECURITY FEATURES -->
+
+        <div class="row mt-5">
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card dashboard-card shadow p-4 h-100">
+
+                    <h3>
+
+                        Immutable Records
+
+                    </h3>
+
+                    <p>
+
+                        Every transaction is permanently
+                        stored inside blockchain blocks,
+                        preventing unauthorized modification.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card dashboard-card shadow p-4 h-100">
+
+                    <h3>
+
+                        Hash Verification
+
+                    </h3>
+
+                    <p>
+
+                        SHA-256 cryptographic hashing
+                        ensures integrity and authenticity
+                        of all land registration data.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card dashboard-card shadow p-4 h-100">
+
+                    <h3>
+
+                        Digital Signatures
+
+                    </h3>
+
+                    <p>
+
+                        Secure digital signatures verify
+                        transaction legitimacy and
+                        ownership authenticity.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
+<!-- FOOTER -->
+
+<footer class="footer mt-5 p-4 text-center">
+
+    <p>
+
+        Secure Land Registry System © 2026
+
+    </p>
+
+</footer>
+
 </body>
 
 </html>
-
-{% include 'navbar.html' %}

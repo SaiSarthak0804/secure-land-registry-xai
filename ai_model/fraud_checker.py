@@ -3,74 +3,208 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 
 
-# Load dataset
+# =========================
+# LOAD DATASET
+# =========================
+
 data = pd.read_csv(
     "datasets/land_fraud_dataset.csv"
 )
 
-# Features
+
+# =========================
+# MANUAL SAFE ENCODING
+# =========================
+
+district_mapping = {
+
+    "Khordha": 0,
+    "Cuttack": 1,
+    "Puri": 2,
+    "Sambalpur": 3,
+    "Bhubaneswar": 4
+}
+
+land_type_mapping = {
+
+    "Agricultural": 0,
+    "Residential": 1,
+    "Commercial": 2
+}
+
+verification_mapping = {
+
+    "Verified": 1,
+    "Pending": 0
+}
+
+
+# APPLY ENCODING TO DATASET
+
+data["district"] = data["district"].map(
+    district_mapping
+)
+
+data["land_type"] = data["land_type"].map(
+    land_type_mapping
+)
+
+data["verification_status"] = data[
+    "verification_status"
+].map(
+    verification_mapping
+)
+
+
+# =========================
+# FEATURES
+# =========================
+
 X = data[
     [
         "area",
         "transaction_count",
         "market_value",
-        "owner_history"
+        "owner_history",
+        "transfer_frequency",
+        "district",
+        "land_type",
+        "verification_status"
     ]
 ]
 
-# Target
+
+# =========================
+# TARGET
+# =========================
+
 y = data["fraud"]
 
-# Train model
-model = DecisionTreeClassifier()
+
+# =========================
+# TRAIN MODEL
+# =========================
+
+model = DecisionTreeClassifier(
+
+    max_depth=6,
+
+    random_state=42
+)
 
 model.fit(X, y)
 
 
-# Fraud detection function
+# =========================
+# FRAUD DETECTION FUNCTION
+# =========================
+
 def check_fraud(
 
     area,
     transaction_count,
     market_value,
-    owner_history
+    owner_history,
+    transfer_frequency,
+    district,
+    land_type,
+    verification_status
 ):
 
-    # Input sample
+    # =========================
+    # SAFE INPUT ENCODING
+    # =========================
+
+    district_encoded = district_mapping.get(
+        district,
+        0
+    )
+
+    land_type_encoded = land_type_mapping.get(
+        land_type,
+        0
+    )
+
+    verification_encoded = verification_mapping.get(
+        verification_status,
+        0
+    )
+
+    # =========================
+    # INPUT SAMPLE
+    # =========================
+
     sample = [[
+
         area,
+
         transaction_count,
+
         market_value,
-        owner_history
+
+        owner_history,
+
+        transfer_frequency,
+
+        district_encoded,
+
+        land_type_encoded,
+
+        verification_encoded
     ]]
 
-    # Prediction
+    # =========================
+    # PREDICTION
+    # =========================
+
     prediction = model.predict(sample)
 
-    # Probability
-    probability = model.predict_proba(sample)
+    # =========================
+    # PROBABILITY
+    # =========================
 
-    # Fraud confidence %
+    probability = model.predict_proba(
+        sample
+    )
+
+    # =========================
+    # FRAUD CONFIDENCE
+    # =========================
+
     confidence = round(
+
         probability[0][1] * 100,
+
         2
     )
 
-    # Fraud detected
+    # =========================
+    # FRAUD DETECTED
+    # =========================
+
     if prediction[0] == 1:
 
         reason = (
+
             "Suspicious ownership pattern, "
-            "high transaction count, or "
-            "abnormal land value detected."
+
+            "high transfer activity, "
+
+            "verification anomaly, or "
+
+            "abnormal land transaction detected."
         )
 
         return True, reason, confidence
 
-    # Safe transaction
+    # =========================
+    # SAFE TRANSACTION
+    # =========================
+
     else:
 
         reason = (
+
             "Transaction pattern appears normal."
         )
 

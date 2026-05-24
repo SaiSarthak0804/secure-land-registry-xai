@@ -9,6 +9,11 @@ from flask import (
     session
 )
 
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
 from sklearn.model_selection import train_test_split
 
 from sklearn.tree import DecisionTreeClassifier
@@ -19,7 +24,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.metrics import accuracy_score
 
-from core.login import hash_password
+from sklearn.preprocessing import LabelEncoder
 
 from database.db_connect import connection
 
@@ -43,20 +48,113 @@ app.secret_key = "secure_land_registry"
 land_chain = Blockchain()
 
 # =========================
-# ADMIN LOGIN
+# SIGNUP PAGE
 # =========================
 
-ADMIN_USERNAME = "admin"
+@app.route("/signup", methods=["GET", "POST"])
 
-ADMIN_PASSWORD_HASH = hash_password(
-    "admin123"
-)
+def signup():
+
+    error = None
+
+    if request.method == "POST":
+
+        full_name = request.form["full_name"]
+
+        email = request.form["email"]
+
+        phone = request.form["phone"]
+
+        username = request.form["username"]
+
+        password = request.form["password"]
+
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+
+            error = "Passwords do not match!"
+
+            return render_template(
+                "signup.html",
+                error=error
+            )
+
+        cursor = connection.cursor()
+
+        query = """
+        SELECT * FROM users
+        WHERE username = %s
+        OR email = %s
+        """
+
+        cursor.execute(
+            query,
+            (username, email)
+        )
+
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+
+            error = "Username or Email already exists!"
+
+            cursor.close()
+
+            return render_template(
+                "signup.html",
+                error=error
+            )
+
+        hashed_password = generate_password_hash(
+            password
+        )
+
+        insert_query = """
+        INSERT INTO users
+        (
+            full_name,
+            email,
+            phone,
+            username,
+            password_hash
+        )
+        VALUES (%s, %s, %s, %s, %s)
+        """
+
+        cursor.execute(
+
+            insert_query,
+
+            (
+                full_name,
+                email,
+                phone,
+                username,
+                hashed_password
+            )
+        )
+
+        connection.commit()
+
+        cursor.close()
+
+        return redirect(
+            url_for("login")
+        )
+
+    return render_template(
+        "signup.html",
+        error=error
+    )
 
 # =========================
 # LOGIN PAGE
 # =========================
 
 @app.route("/", methods=["GET", "POST"])
+
+@app.route("/login", methods=["GET", "POST"])
 
 def login():
 
@@ -68,25 +166,43 @@ def login():
 
         password = request.form["password"]
 
-        entered_password_hash = hash_password(
-            password
+        cursor = connection.cursor()
+
+        query = """
+        SELECT username, password_hash
+        FROM users
+        WHERE username = %s
+        """
+
+        cursor.execute(
+            query,
+            (username,)
         )
 
-        if (
-            username == ADMIN_USERNAME
-            and
-            entered_password_hash == ADMIN_PASSWORD_HASH
-        ):
+        user = cursor.fetchone()
 
-            session["user"] = username
+        cursor.close()
 
-            return redirect(
-                url_for("dashboard")
-            )
+        if user:
 
-        else:
+            stored_username = user[0]
 
-            error = "Invalid Username or Password"
+            stored_password_hash = user[1]
+
+            if check_password_hash(
+
+                stored_password_hash,
+
+                password
+            ):
+
+                session["user"] = stored_username
+
+                return redirect(
+                    url_for("dashboard")
+                )
+
+        error = "Invalid Username or Password"
 
     return render_template(
         "login.html",
@@ -109,14 +225,12 @@ def dashboard():
 
     cursor = connection.cursor()
 
-    # Total Records
     cursor.execute(
         "SELECT COUNT(*) FROM land_records"
     )
 
     total_records = cursor.fetchone()[0]
 
-    # Fraud Count
     cursor.execute(
         "SELECT COUNT(*) FROM fraud_logs"
     )
@@ -150,21 +264,47 @@ def dashboard():
 
 def register_land():
 
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
     result = None
 
     shap_image = False
 
     if request.method == "POST":
 
+        # OWNER DETAILS
+
         owner_name = request.form["owner_name"]
 
+        aadhaar_number = request.form["aadhaar_number"]
+
+        phone_number = request.form["phone_number"]
+
+        address = request.form["address"]
+
+        # LAND DETAILS
+
         land_id = request.form["land_id"]
+
+        survey_number = request.form["survey_number"]
+
+        district = request.form["district"]
+
+        state = request.form["state"]
+
+        land_type = request.form["land_type"]
 
         location = request.form["location"]
 
         area = float(
             request.form["area"]
         )
+
+        # FRAUD ANALYSIS DETAILS
 
         transaction_count = int(
             request.form["transaction_count"]
@@ -178,9 +318,18 @@ def register_land():
             request.form["owner_history"]
         )
 
+        transfer_frequency = int(
+            request.form["transfer_frequency"]
+        )
+
+        verification_status = request.form[
+            "verification_status"
+        ]
+
         cursor = connection.cursor()
 
-        # Duplicate check
+        # DUPLICATE CHECK
+
         check_query = """
         SELECT * FROM land_records
         WHERE land_id = %s
@@ -201,9 +350,7 @@ def register_land():
 
         else:
 
-            # =========================
-            # AI FRAUD DETECTION FIRST
-            # =========================
+            # AI FRAUD DETECTION
 
             is_fraud, reason, confidence = check_fraud(
 
@@ -213,12 +360,18 @@ def register_land():
 
                 market_value,
 
-                owner_history
+                owner_history,
+
+                transfer_frequency,
+
+                district,
+
+                land_type,
+
+                verification_status
             )
 
-            # =========================
-            # BLOCK FRAUD USERS
-            # =========================
+            # BLOCK HIGH FRAUD
 
             if confidence >= 70:
 
@@ -235,9 +388,7 @@ def register_land():
 
             else:
 
-                # =========================
                 # INSERT RECORD
-                # =========================
 
                 insert_query = """
                 INSERT INTO land_records
@@ -245,9 +396,23 @@ def register_land():
                     owner_name,
                     land_id,
                     location,
-                    area
+                    area,
+                    aadhaar_number,
+                    phone_number,
+                    address,
+                    survey_number,
+                    district,
+                    state,
+                    land_type,
+                    transfer_frequency,
+                    verification_status
                 )
-                VALUES (%s, %s, %s, %s)
+                VALUES
+                (
+                    %s, %s, %s, %s,
+                    %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s
+                )
                 """
 
                 cursor.execute(
@@ -258,15 +423,22 @@ def register_land():
                         owner_name,
                         land_id,
                         location,
-                        area
+                        area,
+                        aadhaar_number,
+                        phone_number,
+                        address,
+                        survey_number,
+                        district,
+                        state,
+                        land_type,
+                        transfer_frequency,
+                        verification_status
                     )
                 )
 
                 connection.commit()
 
-                # =========================
                 # BLOCKCHAIN DATA
-                # =========================
 
                 block_data = (
 
@@ -279,9 +451,7 @@ def register_land():
                     f"{area}"
                 )
 
-                # =========================
-                # CREATE BLOCKCHAIN BLOCK
-                # =========================
+                # CREATE BLOCK
 
                 new_block = Block(
 
@@ -296,9 +466,7 @@ def register_land():
                     new_block
                 )
 
-                # =========================
                 # DIGITAL SIGNATURE
-                # =========================
 
                 signature = generate_signature(
                     block_data
@@ -311,9 +479,7 @@ def register_land():
                     signature
                 )
 
-                # =========================
-                # SHAP XAI
-                # =========================
+                # SHAP EXPLAINABILITY
 
                 generate_xai(
 
@@ -323,14 +489,18 @@ def register_land():
 
                     market_value,
 
-                    owner_history
+                    owner_history,
+
+                    transfer_frequency,
+
+                   district,
+
+                  land_type,
+
+                  verification_status
                 )
 
                 shap_image = True
-
-                # =========================
-                # FINAL RESULT
-                # =========================
 
                 result = (
 
@@ -365,6 +535,12 @@ def register_land():
 @app.route("/search", methods=["GET", "POST"])
 
 def search_land():
+
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
 
     record = None
 
@@ -411,6 +587,12 @@ def search_land():
 
 def history():
 
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
     cursor = connection.cursor()
 
     query = """
@@ -454,6 +636,12 @@ def history():
 @app.route("/verify")
 
 def verify_blockchain():
+
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
 
     verification_chain = Blockchain()
 
@@ -522,8 +710,32 @@ def verify_blockchain():
 
 def compare_models():
 
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
     data = pd.read_csv(
         "datasets/land_fraud_dataset.csv"
+    )
+
+    district_encoder = LabelEncoder()
+
+    land_type_encoder = LabelEncoder()
+
+    verification_encoder = LabelEncoder()
+
+    data["district"] = district_encoder.fit_transform(
+        data["district"]
+    )
+
+    data["land_type"] = land_type_encoder.fit_transform(
+        data["land_type"]
+    )
+
+    data["verification_status"] = verification_encoder.fit_transform(
+        data["verification_status"]
     )
 
     X = data[
@@ -531,7 +743,11 @@ def compare_models():
             "area",
             "transaction_count",
             "market_value",
-            "owner_history"
+            "owner_history",
+            "transfer_frequency",
+            "district",
+            "land_type",
+            "verification_status"
         ]
     ]
 
@@ -551,7 +767,7 @@ def compare_models():
         DecisionTreeClassifier(),
 
         "Logistic Regression":
-        LogisticRegression(),
+        LogisticRegression(max_iter=1000),
 
         "Random Forest":
         RandomForestClassifier()

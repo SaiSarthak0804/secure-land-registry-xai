@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>
         Transaction History
@@ -22,67 +27,259 @@
 
 <body>
 
-<div class="container mt-5">
+{% include 'navbar.html' %}
 
-    <div class="card p-5 shadow">
+<div class="container mt-5 mb-5">
 
-        <h2 class="text-center mb-4">
+    <!-- PAGE HEADER -->
 
-            Transaction History
+    <div class="hero-section text-center p-5 mb-5">
 
-        </h2>
+        <h1>
 
-        <table class="table table-bordered">
+            Land Transaction History
 
-            <thead class="table-dark">
+        </h1>
 
-                <tr>
+        <p class="lead mt-3">
 
-                    <th>Owner Name</th>
+            Blockchain-Based Transparent Land Registration Tracking
 
-                    <th>Land ID</th>
+        </p>
 
-                    <th>Location</th>
+    </div>
 
-                    <th>Area</th>
+    <!-- FRAUD ANALYTICS -->
 
-                    <th>Registration Date</th>
+    <div class="row mb-5">
 
-                </tr>
+        <div class="col-md-4">
 
-            </thead>
+            <div class="card analytics-card bg-danger text-white">
 
-            <tbody>
+                <div class="card-body text-center">
 
-                {% for record in records %}
+                    <h2>
 
-                <tr>
+                        {{ fraud_count }}
 
-                    <td>{{ record[0] }}</td>
+                    </h2>
 
-                    <td>{{ record[1] }}</td>
+                    <p>
 
-                    <td>{{ record[2] }}</td>
+                        Fraud Cases Detected
 
-                    <td>{{ record[3] }}</td>
+                    </p>
 
-                    <td>{{ record[4] }}</td>
+                </div>
 
-                </tr>
+            </div>
 
-                {% endfor %}
+        </div>
 
-            </tbody>
+        <div class="col-md-4">
 
-        </table>
+            <div class="card analytics-card bg-success text-white">
 
-        <div class="alert alert-warning mt-4">
+                <div class="card-body text-center">
 
-            <strong>
-                Total Fraud Cases Detected:
-            </strong>
+                    <h2>
 
-            {{ fraud_count }}
+                        {{ records|length }}
+
+                    </h2>
+
+                    <p>
+
+                        Total Transactions
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card analytics-card bg-primary text-white">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        ACTIVE
+
+                    </h2>
+
+                    <p>
+
+                        Blockchain Monitoring
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TRANSACTION TABLE -->
+
+    <div class="card shadow-lg p-4"
+         style="border-radius:25px;">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2 style="color:#1e3a8a;">
+
+                Registered Transactions
+
+            </h2>
+
+            <span class="badge bg-dark p-3">
+
+                Blockchain Secured
+
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Owner Name</th>
+
+                        <th>Land ID</th>
+
+                        <th>Location</th>
+
+                        <th>Area</th>
+
+                        <th>Registration Date</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for record in records %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ record[0] }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                {{ record[1] }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            {{ record[2] }}
+
+                        </td>
+
+                        <td>
+
+                            {{ record[3] }} Acres
+
+                        </td>
+
+                        <td>
+
+                            {{ record[4] }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-success">
+
+                                Verified
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- INFORMATION SECTION -->
+
+    <div class="row mt-5">
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <h3>
+
+                    Blockchain Integrity
+
+                </h3>
+
+                <p>
+
+                    Every transaction is securely stored
+                    inside immutable blockchain blocks,
+                    ensuring tamper-proof ownership tracking.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <h3>
+
+                    AI Fraud Monitoring
+
+                </h3>
+
+                <p>
+
+                    AI continuously analyzes ownership
+                    patterns, transaction frequency,
+                    and suspicious land activity to
+                    detect possible fraud attempts.
+
+                </p>
+
+            </div>
 
         </div>
 
@@ -90,8 +287,18 @@
 
 </div>
 
+<!-- FOOTER -->
+
+<footer class="footer mt-5 p-4 text-center">
+
+    <p>
+
+        Secure Land Registry System © 2026
+
+    </p>
+
+</footer>
+
 </body>
 
 </html>
-
-{% include 'navbar.html' %}

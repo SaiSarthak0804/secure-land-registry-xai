@@ -1,149 +1,363 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
 
-    <title>
-        Register Land
-    </title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Land Registration</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 <body>
 
-<div class="container mt-5">
+{% include 'navbar.html' %}
 
-    <div class="card p-5 shadow">
+<div class="container mt-5 mb-5">
 
-        <h2 class="text-center mb-4">
+    <div class="card shadow p-5"
+         style="border-radius:20px;">
 
-            Land Registration Form
+        <h1 class="text-center mb-5"
+            style="color:#163B65;">
 
-        </h2>
+            Secure Land Registration
+
+        </h1>
 
         <form method="POST">
 
-            <div class="mb-3">
+            <!-- OWNER DETAILS -->
 
-                <label>
-                    Owner Name
-                </label>
+            <h3 class="mb-4 text-success">
 
-                <input
-                    type="text"
-                    name="owner_name"
-                    class="form-control"
-                    required
-                >
+                Owner Details
 
-            </div>
+            </h3>
 
-            <div class="mb-3">
+            <div class="row">
 
-                <label>
-                    Land ID
-                </label>
+                <div class="col-md-6 mb-4">
 
-                <input
-                    type="text"
-                    name="land_id"
-                    class="form-control"
-                    required
-                >
+                    <label class="form-label">
 
-            </div>
+                        Owner Name
 
-            <div class="mb-3">
+                    </label>
 
-                <label>
-                    Location
-                </label>
+                    <input type="text"
+                           name="owner_name"
+                           class="form-control"
+                           required>
 
-                <input
-                    type="text"
-                    name="location"
-                    class="form-control"
-                    required
-                >
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Aadhaar Number
+
+                    </label>
+
+                    <input type="text"
+                           name="aadhaar_number"
+                           class="form-control"
+                           required>
+
+                </div>
 
             </div>
 
-            <div class="mb-3">
+            <div class="row">
 
-                <label>
-                    Area
-                </label>
+                <div class="col-md-6 mb-4">
 
-                <input
-                    type="number"
-                    step="0.01"
-                    name="area"
-                    class="form-control"
-                    required
-                >
+                    <label class="form-label">
 
-            </div>
+                        Phone Number
 
-            <div class="mb-3">
+                    </label>
 
-                <label>
-                    Transaction Count
-                </label>
+                    <input type="text"
+                           name="phone_number"
+                           class="form-control"
+                           required>
 
-                <input
-                    type="number"
-                    name="transaction_count"
-                    class="form-control"
-                    required
-                >
+                </div>
 
-            </div>
+                <div class="col-md-6 mb-4">
 
-            <div class="mb-3">
+                    <label class="form-label">
 
-                <label>
-                    Market Value
-                </label>
+                        Address
 
-                <input
-                    type="number"
-                    name="market_value"
-                    class="form-control"
-                    required
-                >
+                    </label>
+
+                    <input type="text"
+                           name="address"
+                           class="form-control"
+                           required>
+
+                </div>
 
             </div>
 
-            <div class="mb-3">
+            <!-- LAND DETAILS -->
 
-                <label>
-                    Owner History Count
-                </label>
+            <h3 class="mb-4 text-success mt-4">
 
-                <input
-                    type="number"
-                    name="owner_history"
-                    class="form-control"
-                    required
-                >
+                Land Details
+
+            </h3>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Land ID
+
+                    </label>
+
+                    <input type="text"
+                           name="land_id"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Survey Number
+
+                    </label>
+
+                    <input type="text"
+                           name="survey_number"
+                           class="form-control"
+                           required>
+
+                </div>
 
             </div>
 
-            <button
-                type="submit"
-                class="btn btn-success w-100"
-            >
+            <div class="row">
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label">
+
+                        District
+
+                    </label>
+
+                    <input type="text"
+                           name="district"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label">
+
+                        State
+
+                    </label>
+
+                    <input type="text"
+                           name="state"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label">
+
+                        Land Type
+
+                    </label>
+
+                    <select name="land_type"
+                            class="form-select"
+                            required>
+
+                        <option value="">
+                            Select
+                        </option>
+
+                        <option value="Agricultural">
+                            Agricultural
+                        </option>
+
+                        <option value="Residential">
+                            Residential
+                        </option>
+
+                        <option value="Commercial">
+                            Commercial
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Location
+
+                    </label>
+
+                    <input type="text"
+                           name="location"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Area (Acres)
+
+                    </label>
+
+                    <input type="number"
+                           step="0.1"
+                           name="area"
+                           class="form-control"
+                           required>
+
+                </div>
+
+            </div>
+
+            <!-- FRAUD ANALYSIS DETAILS -->
+
+            <h3 class="mb-4 text-success mt-4">
+
+                Fraud Analysis Details
+
+            </h3>
+
+            <div class="row">
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label">
+
+                        Transaction Count
+
+                    </label>
+
+                    <input type="number"
+                           name="transaction_count"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label">
+
+                        Market Value
+
+                    </label>
+
+                    <input type="number"
+                           name="market_value"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label">
+
+                        Owner History Count
+
+                    </label>
+
+                    <input type="number"
+                           name="owner_history"
+                           class="form-control"
+                           required>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Transfer Frequency
+
+                    </label>
+
+                    <input type="number"
+                           name="transfer_frequency"
+                           class="form-control"
+                           required>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+
+                        Verification Status
+
+                    </label>
+
+                    <select name="verification_status"
+                            class="form-select"
+                            required>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Verified">
+                            Verified
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success w-100 btn-lg mt-3">
 
                 Register Land
 
@@ -153,32 +367,31 @@
 
         {% if result %}
 
-<div class="alert alert-info mt-4">
+            <div class="alert alert-info mt-4">
 
-    {{ result }}
+                {{ result }}
 
-</div>
+            </div>
 
-{% endif %}
+        {% endif %}
 
-{% if shap_image %}
+        {% if shap_image %}
 
-<div class="card mt-4 p-3">
+            <div class="card mt-5 p-4">
 
-    <h4 class="text-center mb-3">
+                <h3 class="text-center mb-4">
 
-        Explainable AI (XAI)
+                    Explainable AI (XAI)
 
-    </h4>
+                </h3>
 
-    <img
-        src="{{ url_for('static', filename='shap_plot.png') }}"
-        class="img-fluid"
-    >
+                <img
+                    src="{{ url_for('static', filename='shap_plot.png') }}"
+                    class="img-fluid">
 
-</div>
+            </div>
 
-{% endif %}
+        {% endif %}
 
     </div>
 
@@ -187,5 +400,3 @@
 </body>
 
 </html>
-
-{% include 'navbar.html' %}

@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>
         AI Model Comparison
@@ -22,54 +27,299 @@
 
 <body>
 
-<div class="container mt-5">
+{% include 'navbar.html' %}
 
-    <div class="card p-5 shadow">
+<div class="container mt-5 mb-5">
 
-        <h2 class="text-center mb-4">
+    <!-- HERO SECTION -->
 
-            AI Model Comparison
+    <div class="hero-section text-center p-5 mb-5">
+
+        <h1>
+
+            AI Fraud Detection Analytics
+
+        </h1>
+
+        <p class="lead mt-3">
+
+            Comparative Analysis of Machine Learning Models
+            for Land Fraud Detection
+
+        </p>
+
+    </div>
+
+    <!-- ANALYTICS CARDS -->
+
+    <div class="row mb-5">
+
+        {% for model in results %}
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card analytics-card shadow-lg h-100
+                {% if model[1] > 95 %}
+                    bg-success text-white
+                {% elif model[1] > 90 %}
+                    bg-primary text-white
+                {% else %}
+                    bg-dark text-white
+                {% endif %}
+            ">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ model[1] }}%
+
+                    </h2>
+
+                    <h4 class="mt-3">
+
+                        {{ model[0] }}
+
+                    </h4>
+
+                    <p class="mt-3">
+
+                        Fraud Detection Accuracy
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- COMPARISON TABLE -->
+
+    <div class="card shadow-lg p-5"
+         style="border-radius:25px;">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2 style="color:#1e3a8a;">
+
+                Model Performance Comparison
+
+            </h2>
+
+            <span class="badge bg-success p-3">
+
+                AI Monitoring Active
+
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Machine Learning Model</th>
+
+                        <th>Accuracy</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for model in results %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+
+                                {{ model[0] }}
+
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            {{ model[1] }}%
+
+                        </td>
+
+                        <td>
+
+                            {% if model[1] > 95 %}
+
+                                <span class="badge bg-success">
+
+                                    Highly Accurate
+
+                                </span>
+
+                            {% elif model[1] > 90 %}
+
+                                <span class="badge bg-primary">
+
+                                    Stable Performance
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Moderate Accuracy
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- AI FEATURES -->
+
+    <div class="row mt-5">
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow p-4 h-100">
+
+                <h3>
+
+                    Decision Tree
+
+                </h3>
+
+                <p>
+
+                    Provides interpretable fraud
+                    classification using rule-based
+                    transaction analysis.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow p-4 h-100">
+
+                <h3>
+
+                    Logistic Regression
+
+                </h3>
+
+                <p>
+
+                    Performs probabilistic fraud
+                    prediction for binary classification
+                    of suspicious land transactions.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card dashboard-card shadow p-4 h-100">
+
+                <h3>
+
+                    Random Forest
+
+                </h3>
+
+                <p>
+
+                    Uses ensemble learning for
+                    improved fraud detection accuracy
+                    and robust prediction performance.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- XAI SECTION -->
+
+    <div class="card shadow-lg p-5 mt-5"
+         style="border-radius:25px;">
+
+        <h2 class="text-center mb-4"
+            style="color:#1e3a8a;">
+
+            Explainable AI (XAI)
 
         </h2>
 
-        <table class="table table-bordered">
+        <p class="text-center">
 
-            <thead class="table-dark">
+            SHAP-based Explainable AI is integrated
+            to provide transparent reasoning behind
+            fraud predictions, improving trust,
+            interpretability, and governance transparency.
 
-                <tr>
+        </p>
 
-                    <th>Model</th>
+        <div class="text-center mt-4">
 
-                    <th>Accuracy</th>
+            <span class="badge bg-dark p-3">
 
-                </tr>
+                SHAP Explainability Enabled
 
-            </thead>
+            </span>
 
-            <tbody>
-
-                {% for model in results %}
-
-                <tr>
-
-                    <td>{{ model[0] }}</td>
-
-                    <td>{{ model[1] }}%</td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 
 </div>
 
+<!-- FOOTER -->
+
+<footer class="footer mt-5 p-4 text-center">
+
+    <p>
+
+        Secure Land Registry System © 2026
+
+    </p>
+
+</footer>
+
 </body>
 
 </html>
-
-{% include 'navbar.html' %}

@@ -1,35 +1,105 @@
 import pandas as pd
 import random
 
-
 records = []
 
-locations = [
-    "Odisha",
+districts = [
+
     "Bhubaneswar",
     "Cuttack",
     "Puri",
-    "Sambalpur"
+    "Sambalpur",
+    "Rourkela",
+    "Balasore",
+    "Berhampur"
+
 ]
 
+land_types = [
 
-for i in range(1, 501):
+    "Agricultural",
+    "Residential",
+    "Commercial"
 
-    area = round(random.uniform(1, 20), 2)
+]
 
-    transaction_count = random.randint(1, 10)
+verification_statuses = [
 
-    market_value = random.randint(100000, 5000000)
+    "Verified",
+    "Pending"
 
-    owner_history = random.randint(1, 8)
+]
 
-    # Fraud logic
+for i in range(1, 1501):
+
+    area = round(
+        random.uniform(1, 25),
+        2
+    )
+
+    transaction_count = random.randint(1, 12)
+
+    market_value = random.randint(
+        100000,
+        10000000
+    )
+
+    owner_history = random.randint(1, 10)
+
+    transfer_frequency = random.randint(0, 8)
+
+    district = random.choice(
+        districts
+    )
+
+    land_type = random.choice(
+        land_types
+    )
+
+    verification_status = random.choice(
+        verification_statuses
+    )
+
+    # FRAUD LOGIC
+
     fraud = 0
 
-    if area > 10 and transaction_count > 5:
-        fraud = 1
+    risk_score = 0
 
-    if owner_history > 5:
+    # High ownership transfer
+
+    if owner_history > 6:
+
+        risk_score += 25
+
+    # Frequent transactions
+
+    if transaction_count > 7:
+
+        risk_score += 25
+
+    # High transfer frequency
+
+    if transfer_frequency > 5:
+
+        risk_score += 20
+
+    # Pending verification
+
+    if verification_status == "Pending":
+
+        risk_score += 15
+
+    # Suspicious large land
+
+    if area > 18:
+
+        risk_score += 15
+
+    # Fraud Threshold
+
+    if risk_score >= 50:
+
         fraud = 1
 
     record = {
@@ -44,23 +114,36 @@ for i in range(1, 501):
 
         "owner_history": owner_history,
 
-        "location": random.choice(locations),
+        "transfer_frequency": transfer_frequency,
+
+        "district": district,
+
+        "land_type": land_type,
+
+        "verification_status": verification_status,
 
         "fraud": fraud
     }
 
     records.append(record)
 
+# CREATE DATAFRAME
 
-# Create dataframe
 df = pd.DataFrame(records)
 
-# Save CSV dataset
+# SAVE CSV
+
 df.to_csv(
+
     "datasets/land_fraud_dataset.csv",
+
     index=False
 )
 
 print("\nDataset Generated Successfully!\n")
 
 print(df.head())
+
+print("\nTotal Records Generated:")
+
+print(len(df))
