@@ -1,56 +1,80 @@
-import hashlib
+from werkzeug.security import check_password_hash
+
+from database.db_connect import connection
 
 
-# Admin username
-ADMIN_USERNAME = "admin"
+# =========================
+# LOGIN FUNCTION
+# =========================
 
-
-# Hash password
-def hash_password(password):
-
-    return hashlib.sha256(
-        password.encode()
-    ).hexdigest()
-
-
-# Stored hashed password
-ADMIN_PASSWORD_HASH = hash_password(
-    "admin123"
-)
-
-
-# Login function
 def login():
 
-    print("\n========== LOGIN ==========\n")
+    print("\n========== USER LOGIN ==========\n")
 
-    username = input("Enter Username: ")
-
-    password = input("Enter Password: ")
-
-    # Hash entered password
-    entered_password_hash = hash_password(
-        password
+    username = input(
+        "Enter Username: "
     )
 
-    # Verify credentials
-    if (
+    password = input(
+        "Enter Password: "
+    )
 
-        username == ADMIN_USERNAME
+    # =========================
+    # DATABASE CURSOR
+    # =========================
 
-        and
+    cursor = connection.cursor()
 
-        entered_password_hash
-        ==
-        ADMIN_PASSWORD_HASH
-    ):
+    # =========================
+    # FETCH USER
+    # =========================
 
-        print("\nLogin Successful!")
+    query = """
+    SELECT username, password_hash
+    FROM users
+    WHERE username = %s
+    """
 
-        return True
+    cursor.execute(
+        query,
+        (username,)
+    )
 
-    else:
+    user = cursor.fetchone()
 
-        print("\nInvalid Username or Password!")
+    # =========================
+    # VERIFY PASSWORD
+    # =========================
 
-        return False
+    if user:
+
+        stored_hash = user[1]
+
+        if check_password_hash(
+            stored_hash,
+            password
+        ):
+
+            print(
+                "\nLogin Successful!"
+            )
+
+            print(
+                f"Welcome, {username}"
+            )
+
+            cursor.close()
+
+            return True
+
+    # =========================
+    # INVALID LOGIN
+    # =========================
+
+    print(
+        "\nInvalid Username or Password!"
+    )
+
+    cursor.close()
+
+    return False

@@ -301,4 +301,3 @@ print(
 
 cursor.close()
 
-connection.close()

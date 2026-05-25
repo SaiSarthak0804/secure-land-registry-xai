@@ -39,7 +39,9 @@ verification_mapping = {
 }
 
 
+# =========================
 # APPLY ENCODING TO DATASET
+# =========================
 
 data["district"] = data["district"].map(
     district_mapping
@@ -154,22 +156,14 @@ def check_fraud(
     ]]
 
     # =========================
-    # PREDICTION
+    # AI PREDICTION
     # =========================
 
     prediction = model.predict(sample)
 
-    # =========================
-    # PROBABILITY
-    # =========================
-
     probability = model.predict_proba(
         sample
     )
-
-    # =========================
-    # FRAUD CONFIDENCE
-    # =========================
 
     confidence = round(
 
@@ -177,6 +171,63 @@ def check_fraud(
 
         2
     )
+
+    # =========================
+    # RULE-BASED FRAUD BOOST
+    # =========================
+
+    suspicious_score = 0
+
+    # HIGH TRANSACTION ACTIVITY
+
+    if transaction_count >= 5:
+
+        suspicious_score += 25
+
+    # MANY OWNERS
+
+    if owner_history >= 4:
+
+        suspicious_score += 25
+
+    # HIGH TRANSFER FREQUENCY
+
+    if transfer_frequency >= 5:
+
+        suspicious_score += 25
+
+    # PENDING VERIFICATION
+
+    if verification_status == "Pending":
+
+        suspicious_score += 15
+
+    # HIGH MARKET VALUE
+
+    if market_value >= 5000000:
+
+        suspicious_score += 10
+
+    # =========================
+    # FINAL CONFIDENCE
+    # =========================
+
+    confidence = max(
+        confidence,
+        suspicious_score
+    )
+
+    # =========================
+    # FRAUD DECISION
+    # =========================
+
+    if confidence >= 50:
+
+        prediction = [1]
+
+    else:
+
+        prediction = [0]
 
     # =========================
     # FRAUD DETECTED

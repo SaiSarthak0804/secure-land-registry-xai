@@ -274,9 +274,13 @@ def register_land():
 
     shap_image = False
 
+    fraud_message = None
+
     if request.method == "POST":
 
+        # =========================
         # OWNER DETAILS
+        # =========================
 
         owner_name = request.form["owner_name"]
 
@@ -286,7 +290,9 @@ def register_land():
 
         address = request.form["address"]
 
+        # =========================
         # LAND DETAILS
+        # =========================
 
         land_id = request.form["land_id"]
 
@@ -304,7 +310,9 @@ def register_land():
             request.form["area"]
         )
 
+        # =========================
         # FRAUD ANALYSIS DETAILS
+        # =========================
 
         transaction_count = int(
             request.form["transaction_count"]
@@ -328,7 +336,9 @@ def register_land():
 
         cursor = connection.cursor()
 
-        # DUPLICATE CHECK
+        # =========================
+        # DUPLICATE LAND CHECK
+        # =========================
 
         check_query = """
         SELECT * FROM land_records
@@ -350,7 +360,9 @@ def register_land():
 
         else:
 
+            # =========================
             # AI FRAUD DETECTION
+            # =========================
 
             is_fraud, reason, confidence = check_fraud(
 
@@ -371,27 +383,39 @@ def register_land():
                 verification_status
             )
 
-            # BLOCK HIGH FRAUD
+            # =========================
+            # INSERT LAND RECORD
+            # =========================
 
-            if confidence >= 70:
+            insert_query = """
+            INSERT INTO land_records
+            (
+                owner_name,
+                land_id,
+                location,
+                area,
+                aadhaar_number,
+                phone_number,
+                address,
+                survey_number,
+                district,
+                state,
+                land_type,
+                transfer_frequency,
+                verification_status
+            )
+            VALUES
+            (
+                %s, %s, %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, %s, %s, %s
+            )
+            """
 
-                result = (
+            cursor.execute(
 
-                    f"Registration BLOCKED | "
+                insert_query,
 
-                    f"{reason} | "
-
-                    f"Fraud Confidence: "
-
-                    f"{confidence}%"
-                )
-
-            else:
-
-                # INSERT RECORD
-
-                insert_query = """
-                INSERT INTO land_records
                 (
                     owner_name,
                     land_id,
@@ -407,115 +431,134 @@ def register_land():
                     transfer_frequency,
                     verification_status
                 )
-                VALUES
+            )
+
+            connection.commit()
+
+            # =========================
+            # BLOCKCHAIN DATA
+            # =========================
+
+            block_data = (
+
+                f"{land_id} | "
+
+                f"{owner_name} | "
+
+                f"{location} | "
+
+                f"{area}"
+            )
+
+            # =========================
+            # CREATE BLOCK
+            # =========================
+
+            new_block = Block(
+
+                len(land_chain.chain),
+
+                block_data,
+
+                land_chain.get_latest_block().hash
+            )
+
+            land_chain.add_block(
+                new_block
+            )
+
+            # =========================
+            # DIGITAL SIGNATURE
+            # =========================
+
+            signature = generate_signature(
+                block_data
+            )
+
+            verified = verify_signature(
+
+                block_data,
+
+                signature
+            )
+
+            # =========================
+            # STORE FRAUD LOG
+            # =========================
+
+            if is_fraud:
+
+                fraud_query = """
+                INSERT INTO fraud_logs
                 (
-                    %s, %s, %s, %s,
-                    %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s
+                    land_id,
+                    owner_name,
+                    fraud_reason
                 )
+                VALUES (%s, %s, %s)
                 """
 
                 cursor.execute(
 
-                    insert_query,
+                    fraud_query,
 
                     (
-                        owner_name,
                         land_id,
-                        location,
-                        area,
-                        aadhaar_number,
-                        phone_number,
-                        address,
-                        survey_number,
-                        district,
-                        state,
-                        land_type,
-                        transfer_frequency,
-                        verification_status
+                        owner_name,
+                        reason
                     )
                 )
 
                 connection.commit()
 
-                # BLOCKCHAIN DATA
+                fraud_message = (
 
-                block_data = (
-
-                    f"{land_id} | "
-
-                    f"{owner_name} | "
-
-                    f"{location} | "
-
-                    f"{area}"
-                )
-
-                # CREATE BLOCK
-
-                new_block = Block(
-
-                    len(land_chain.chain),
-
-                    block_data,
-
-                    land_chain.get_latest_block().hash
-                )
-
-                land_chain.add_block(
-                    new_block
-                )
-
-                # DIGITAL SIGNATURE
-
-                signature = generate_signature(
-                    block_data
-                )
-
-                verified = verify_signature(
-
-                    block_data,
-
-                    signature
-                )
-
-                # SHAP EXPLAINABILITY
-
-                generate_xai(
-
-                    area,
-
-                    transaction_count,
-
-                    market_value,
-
-                    owner_history,
-
-                    transfer_frequency,
-
-                   district,
-
-                  land_type,
-
-                  verification_status
-                )
-
-                shap_image = True
-
-                result = (
-
-                    f"Land Registered Successfully | "
-
-                    f"{reason} | "
+                    f"Suspicious Transaction Detected! "
 
                     f"Fraud Confidence: "
 
-                    f"{confidence}% | "
-
-                    f"Digital Signature Verified: "
-
-                    f"{verified}"
+                    f"{confidence}%"
                 )
+
+            # =========================
+            # SHAP EXPLAINABILITY
+            # =========================
+
+            generate_xai(
+
+                area,
+
+                transaction_count,
+
+                market_value,
+
+                owner_history,
+
+                transfer_frequency,
+
+                district,
+
+                land_type,
+
+                verification_status
+            )
+
+            shap_image = True
+
+            result = (
+
+                f"Land Registered Successfully | "
+
+                f"{reason} | "
+
+                f"Fraud Confidence: "
+
+                f"{confidence}% | "
+
+                f"Digital Signature Verified: "
+
+                f"{verified}"
+            )
 
         cursor.close()
 
@@ -525,9 +568,10 @@ def register_land():
 
         result=result,
 
+        fraud_message=fraud_message,
+
         shap_image=shap_image
     )
-
 # =========================
 # SEARCH LAND
 # =========================
@@ -627,6 +671,44 @@ def history():
         records=records,
 
         fraud_count=fraud_count
+    )
+
+# =========================
+# FRAUD LOGS
+# =========================
+
+@app.route("/fraud-logs")
+
+def fraud_logs():
+
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    cursor = connection.cursor()
+
+    query = """
+    SELECT
+        land_id,
+        owner_name,
+        fraud_reason
+    FROM fraud_logs
+    ORDER BY id DESC
+    """
+
+    cursor.execute(query)
+
+    fraud_records = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template(
+
+        "fraud_logs.html",
+
+        fraud_records=fraud_records
     )
 
 # =========================

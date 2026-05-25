@@ -3,36 +3,61 @@ import importlib
 from core.login import login
 
 
-# Login verification
+# =========================
+# LOGIN VERIFICATION
+# =========================
+
 if not login():
 
     exit()
 
 
-# Menu display
+# =========================
+# MENU DISPLAY
+# =========================
+
 def show_menu():
 
     print("\n========================================")
-    print("  SECURE LAND REGISTRATION SYSTEM")
+
+    print("   SECURE LAND REGISTRY SYSTEM")
+
     print("========================================")
 
     print("\n1. Register Land")
+
     print("2. Verify Blockchain")
+
     print("3. View Transaction History")
+
     print("4. Search Land Record")
+
     print("5. Compare AI Models")
+
     print("6. Exit")
 
 
-# Main loop
+# =========================
+# MAIN LOOP
+# =========================
+
 while True:
 
     show_menu()
 
-    choice = input("\nEnter Your Choice: ")
+    choice = input(
+        "\nEnter Your Choice: "
+    )
 
-    # Register Land
+    # =========================
+    # REGISTER LAND
+    # =========================
+
     if choice == "1":
+
+        print(
+            "\nOpening Land Registration Module...\n"
+        )
 
         import core.land_registration
 
@@ -40,8 +65,15 @@ while True:
             core.land_registration
         )
 
-    # Verify Blockchain
+    # =========================
+    # VERIFY BLOCKCHAIN
+    # =========================
+
     elif choice == "2":
+
+        print(
+            "\nOpening Blockchain Verification...\n"
+        )
 
         import core.land_verification
 
@@ -49,8 +81,15 @@ while True:
             core.land_verification
         )
 
-    # View Transaction History
+    # =========================
+    # TRANSACTION HISTORY
+    # =========================
+
     elif choice == "3":
+
+        print(
+            "\nOpening Transaction History...\n"
+        )
 
         import core.transaction_history
 
@@ -58,8 +97,15 @@ while True:
             core.transaction_history
         )
 
-    # Search Land Record
+    # =========================
+    # SEARCH LAND RECORD
+    # =========================
+
     elif choice == "4":
+
+        print(
+            "\nOpening Search Module...\n"
+        )
 
         import core.search_land
 
@@ -67,8 +113,15 @@ while True:
             core.search_land
         )
 
-    # Compare AI Models
+    # =========================
+    # AI MODEL COMPARISON
+    # =========================
+
     elif choice == "5":
+
+        print(
+            "\nOpening AI Model Comparison...\n"
+        )
 
         import ai_model.model_comparison
 
@@ -76,14 +129,29 @@ while True:
             ai_model.model_comparison
         )
 
-    # Exit
+    # =========================
+    # EXIT SYSTEM
+    # =========================
+
     elif choice == "6":
 
-        print("\nSystem Closed Successfully")
+        print(
+            "\nSystem Closed Successfully."
+        )
+
+        print(
+            "Thank You For Using "
+            "Secure Land Registry System.\n"
+        )
 
         break
 
-    # Invalid Choice
+    # =========================
+    # INVALID INPUT
+    # =========================
+
     else:
 
-        print("\nInvalid Choice. Try Again.")
+        print(
+            "\nInvalid Choice. Please Try Again."
+        )
