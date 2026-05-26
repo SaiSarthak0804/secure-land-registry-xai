@@ -6,8 +6,10 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>
         Search Land
@@ -31,11 +33,15 @@
 
 <div class="container mt-5 mb-5">
 
-    <div class="card p-5 shadow-lg"
-         style="border-radius:25px;">
+    <div
+        class="card p-5 shadow-lg"
+        style="border-radius:25px;"
+    >
 
-        <h1 class="text-center mb-4"
-            style="color:#1e3a8a;">
+        <h1
+            class="text-center mb-4"
+            style="color:#1e3a8a;"
+        >
 
             Land Verification Portal
 
@@ -86,12 +92,16 @@
 
         {% if record %}
 
-        <div class="card mt-5 border-0 shadow-sm"
-             style="border-radius:20px;">
+        <div
+            class="card mt-5 border-0 shadow-sm"
+            style="border-radius:20px;"
+        >
 
             <div class="card-body p-5">
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div
+                    class="d-flex justify-content-between align-items-center"
+                >
 
                     <h3 style="color:#1e3a8a;">
 
@@ -151,7 +161,15 @@
 
                             <strong>Aadhaar Number:</strong>
 
-                            XXXX-XXXX-{{ record[6][-4:] }}
+                            {% if record[6] %}
+
+                                XXXX-XXXX-{{ record[6][-4:] }}
+
+                            {% else %}
+
+                                Not Available
+
+                            {% endif %}
 
                         </p>
 
@@ -223,7 +241,9 @@
 
                             {% else %}
 
-                                <span class="badge bg-warning text-dark">
+                                <span
+                                    class="badge bg-warning text-dark"
+                                >
 
                                     Pending
 
@@ -259,15 +279,19 @@
 
         </div>
 
-        {% endif %}
+        {% elif error %}
 
-        <!-- ERROR -->
+        <!-- ERROR MESSAGE -->
 
-        {% if error %}
+        <div
+            class="alert alert-danger mt-5 text-center"
+        >
 
-        <div class="alert alert-danger mt-4 text-center">
+            <h5>
 
-            {{ error }}
+                {{ error }}
+
+            </h5>
 
         </div>
 
